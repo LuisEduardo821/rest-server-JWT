@@ -1,85 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Sign in</title>
+  </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-    }
+  <body>
+    <h1>Google Sign in</h1>
+    <hr />
 
-    h1 {
-        text-align: center;
-        color: #333;
-    }
+    <div
+      id="g_id_onload"
+      data-client_id="131273968692-volre7kjllkjshh7to8u5hq5ete5q7c4.apps.googleusercontent.com"
+      data-auto_prompt="false"
+      data-callback="handleCredentialResponse"
+    ></div>
+    <div
+      class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="outline"
+      data-text="sign_in_with"
+      data-shape="rectangular"
+      data-logo_alignment="left"
+    ></div>
 
-    form {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <script>
+      function handleCredentialResponse(response) {
+        //google token : ID_TOKEN
+        // console.log('id_token',response.credential);
 
-    label {
-        display: block;
-        margin: 10px 0;
-        color: #555;
-    }
+        const body = { id_token: response.credential };
 
-    input {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 15px;
-        box-sizing: border-box;
-    }
-
-    button {
-        background-color: #4caf50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-
-    p {
-        margin-top: 15px;
-        color: #f00;
-    }
-
-    body {
-        flex-direction: column;
-    }
-</style>
-
-<body>
-    <h1>
-        Login
-    </h1>
-    <form method="post" action="/api/auth/login">
-        <label for="username">Email:</label>
-        <input type="text" id="email" name="email">
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password">
-        <button type="submit">Iniciar Sesion</button>
-    </form>
-
-    <% if(msg) { %>
-        <p>
-            <%= msg %>
-        </p>
-        <% } %>
-</body>
-
+        fetch("http://localhost:3000/api/auth/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        })
+          .then((resp) => resp.json())
+          .then((resp) => {
+            console.log(resp);
+          })
+          .catch(console.warn);
+      }
+    </script>
+  </body>
 </html>
